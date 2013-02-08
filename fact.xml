@@ -1,0 +1,74 @@
+<script xmlns="http://slurm.romulusetrem.us"
+  xmlns:f="http://slurm.romulusetrem.us/function"
+  xmlns:t="http://slurm.romulusetrem.us/type"
+  xmlns:v="http://slurm.romulusetrem.us/variable">
+
+  <!--
+
+// fact :: int -> int
+function fact($0) {
+  if ($0 === 0) {
+    return 1;
+  } else if (true) {
+    var n = $0;
+    return n * fact(n - 1);
+  }
+}
+
+  -->
+
+  <f:fact>
+    <type>
+      <t:int/>
+      <t:int/>
+    </type>
+    <match>
+      <pattern>
+        <t:int>0</t:int>
+      </pattern>
+      <t:int>1</t:int>
+    </match>
+    <match>
+      <pattern>
+        <v:n/>
+      </pattern>
+      <mul>
+        <v:n/>
+        <f:fact>
+          <sub>
+            <v:n/>
+            <t:int>1</t:int>
+          </sub>
+        </f:fact>
+      </mul>
+    </match>
+  </f:fact>
+
+  <!--
+
+document.body.appendChild(slurm.$("p", (function (n) {
+  return ["fact(", n.toString(), ") = ", fact(n).toString()].join("");
+}(6))));
+
+  -->
+
+  <html:p xmlns:html="http://www.w3.org/1999/xhtml">
+    <let>
+      <v:n/>
+      <t:int>6</t:int>
+      <join>
+        <t:string>fact(</t:string>
+        <f:to-string>
+          <v:n/>
+        </f:to-string>
+        <t:string>) = </t:string>
+        <f:to-string>
+          <f:fact>
+            <v:n/>
+          </f:fact>
+        </f:to-string>
+      </join>
+    </let>
+  </html:p>
+
+</script>

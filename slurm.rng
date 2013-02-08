@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+  ns="http://slurm.romulusetrem.us"
+  datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <start>
+    <ref name="script"/>
+  </start>
+
+  <define name="script">
+    <element name="script">
+      <interleave>
+        <zeroOrMore>
+          <ref name="function-definition"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="foreign-content"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="function-definition">
+    <element>
+      <nsName ns="http://slurm.romulusetrem.us/function"/>
+      <ref name="type"/>
+      <ref name="expression"/>
+    </element>
+  </define>
+
+  <define name="function-call">
+    <element>
+      <nsName ns="http://slurm.romulusetrem.us/function"/>
+      <oneOrMore>
+        <ref name="expression"/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="type">
+    <element name="type">
+      <oneOrMore>
+        <ref name="type-spec"/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="type-spec">
+    <choice>
+      <element>
+        <nsName ns="http://slurm.romulusetrem.us/type"/>
+        <optional>
+          <attribute name="min"/>
+        </optional>
+        <optional>
+          <attribute name="max"/>
+        </optional>
+        <optional>
+          <attribute name="range"/>
+        </optional>
+        <empty/>
+      </element>
+      <element>
+        <nsName ns="http://slurm.romulusetrem.us/variable"/>
+        <empty/>
+      </element>
+      <element name="list">
+        <ref name="type-spec"/>
+      </element>
+      <element name="tuple">
+        <ref name="type-spec"/>
+        <oneOrMore>
+          <ref name="type-spec"/>
+        </oneOrMore>
+      </element>
+      <element name="function">
+        <ref name="type-spec"/>
+        <oneOrMore>
+          <ref name="type-spec"/>
+        </oneOrMore>
+      </element>
+    </choice>
+  </define>
+
+  <define name="expression">
+    <choice>
+      <oneOrMore>
+        <ref name="match"/>
+      </oneOrMore>
+      <ref name="variable-reference"/>
+      <ref name="literal"/>
+      <ref name="operator"/>
+      <ref name="function-call"/>
+      <ref name="let"/>
+      <ref name="switch"/>
+    </choice>
+  </define>
+
+  <define name="switch">
+    <element name="switch">
+      <ref name="expression"/>
+      <oneOrMore>
+        <ref name="match"/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="match">
+    <element name="match">
+      <ref name="pattern"/>
+      <ref name="expression"/>
+    </element>
+  </define>
+
+  <define name="pattern">
+    <element name="pattern">
+      <oneOrMore>
+        <choice>
+          <ref name="literal"/>
+          <ref name="variable-reference"/>
+          <ref name="any"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="any">
+    <element name="any">
+      <empty/>
+    </element>
+  </define>
+
+  <define name="let">
+    <element name="let">
+      <oneOrMore>
+        <ref name="variable-reference"/>
+        <ref name="expression"/>
+      </oneOrMore>
+      <ref name="expression"/>
+    </element>
+  </define>
+
+  <define name="literal">
+    <choice>
+      <element>
+        <nsName ns="http://slurm.romulusetrem.us/type"/>
+        <text/>
+      </element>
+      <element name="list">
+        <zeroOrMore>
+          <ref name="literal"/>
+        </zeroOrMore>
+      </element>
+      <element name="tuple">
+        <ref name="literal"/>
+        <oneOrMore>
+          <ref name="literal"/>
+        </oneOrMore>
+      </element>
+      <element name="function">
+        <ref name="type"/>
+        <ref name="expression"/>
+      </element>
+    </choice>
+  </define>
+
+  <define name="variable-reference">
+    <element>
+      <nsName ns="http://slurm.romulusetrem.us/variable"/>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="operator">
+    <element>
+      <choice>
+        <name>add</name>
+        <name>cons</name>
+        <name>div</name>
+        <name>join</name>
+        <name>mul</name>
+        <name>rem</name>
+        <name>sub</name>
+      </choice>
+      <ref name="expression"/>
+      <oneOrMore>
+        <ref name="expression"/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="foreign-content">
+    <element>
+      <anyName>
+        <except>
+          <nsName/>
+          <nsName ns="http://slurm.romulusetrem.us/function"/>
+        </except>
+      </anyName>
+      <mixed>
+        <zeroOrMore>
+          <ref name="foreign-content"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="expression"/>
+        </zeroOrMore>
+      </mixed>
+    </element>
+  </define>
+
+</grammar>

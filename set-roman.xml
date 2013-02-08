@@ -1,0 +1,227 @@
+<component xmlns="http://bender.romulusetrem.us">
+  <property name="x" as="number"/>
+  <view xmlns:html="http://www.w3.org/1999/xhtml">
+    <html:p>
+      <get property="x"/> = <span id="roman"/> in roman numerals
+    </html:p>
+  </view>
+  <watch>
+    <get property="x"/>
+    <set view="roman">
+      <!--
+
+        unit :: int -> char -> char -> char -> [char]
+        unit 0 _ _ _ = []
+        unit 1 i _ _ = [i]
+        unit 2 i _ _ = [i, i]
+        unit 3 i _ _ = [i, i, i]
+        unit 4 i v _ = [i, v]
+        unit 5 _ v _ = [v]
+        unit 6 i v _ = [v, i]
+        unit 7 i v _ = [v, i, i]
+        unit 8 i v _ = [v, i, i, i]
+        unit 9 i _ x = [i, x]
+
+        thousands :: int -> [char]
+        thousands 0 = []
+        thousands n = 'm' : thousands (n - 1)
+
+        _ :: int -> string
+        _ n
+        | n == 0 = "nulla"
+        | _ = thousands (n / 1000) .
+              unit ((n / 100) % 10) 'c' 'd' 'm' .
+              unit ((n / 10) % 10)  'x' 'l' 'c' .
+              unit n % 10           'i' 'v' 'x'
+
+      -->
+      <t:function xmlns="http://slurm.romulusetrem.us"
+        xmlns:f="http://slurm.romulusetrem.us/function"
+        xmlns:t="http://slurm.romulusetrem.us/type"
+        xmlns:v="http://slurm.romulusetrem.us/variable">
+        <f:unit>
+          <type>
+            <t:int min="0" max="9"/>
+            <t:char range="ixc"/>
+            <t:char range="vld"/>
+            <t:char range="xcm"/>
+            <list>
+              <t:char/>
+            </list>
+          </type>
+          <match>
+            <t:int>0</t:int>
+            <any/>
+            <any/>
+            <any/>
+            <t:array/>
+          </match>
+          <match>
+            <t:int>1</t:int>
+            <v:i/>
+            <any/>
+            <any/>
+            <v:i/>
+          </match>
+          <match>
+            <t:int>2</t:int>
+            <v:i/>
+            <any/>
+            <any/>
+            <list>
+              <v:i/>
+              <v:i/>
+            </list>
+          </match>
+          <match>
+            <t:int>3</t:int>
+            <v:i/>
+            <any/>
+            <any/>
+            <list>
+              <v:i/>
+              <v:i/>
+              <v:i/>
+            </list>
+          </match>
+          <match>
+            <t:int>4</t:int>
+            <v:i/>
+            <v:v/>
+            <any/>
+            <list>
+              <v:i/>
+              <v:v/>
+            </list>
+          </match>
+          <match>
+            <t:int>5</t:int>
+            <any/>
+            <v:v/>
+            <any/>
+            <v:v/>
+          </match>
+          <match>
+            <t:int>6</t:int>
+            <v:i/>
+            <v:v/>
+            <any/>
+            <list>
+              <v:v/>
+              <v:i/>
+            </list>
+          </match>
+          <match>
+            <t:int>7</t:int>
+            <v:i/>
+            <v:v/>
+            <any/>
+            <list>
+              <v:v/>
+              <v:i/>
+              <v:i/>
+            </list>
+          </match>
+          <match>
+            <t:int>8</t:int>
+            <v:i/>
+            <v:v/>
+            <any/>
+            <list>
+              <v:v/>
+              <v:i/>
+              <v:i/>
+              <v:i/>
+            </list>
+          </match>
+          <match>
+            <t:int>9</t:int>
+            <any/>
+            <v:v/>
+            <v:x/>
+            <list>
+              <v:i/>
+              <v:x/>
+            </list>
+          </match>
+        </f:unit>
+        <f:thousands>
+          <type>
+            <t:int/>
+            <t:string/>
+          </type>
+          <match>
+            <t:int>0</t:int>
+            <t:string/>
+          </match>
+          <match>
+            <v:m/>
+            <cons>
+              <t:char>m</t:char>
+              <f:thousands>
+                <sub>
+                  <v:m/>
+                  <t:int>1</t:int>
+                </sub>
+              </f:thousands>
+            </cons>
+          </match>
+        </f:thousands>
+        <switch>
+          <v:n/>
+          <match>
+            <le>
+              <v:n/>
+              <t:int>0</t:int>
+            </le>
+            <t:string>nulla</t:string>
+          </match>
+          <match>
+            <any/>
+            <join>
+              <f:thousands>
+                <div>
+                  <v:n/>
+                  <t:int>1000</t:int>
+                </div>
+              </f:thousands>
+              <f:unit>
+                <mod>
+                  <div>
+                    <v:n/>
+                    <t:int>100</t:int>
+                  </div>
+                  <t:int>10</t:int>
+                </mod>
+                <t:char>c</t:char>
+                <t:char>d</t:char>
+                <t:char>m</t:char>
+              </f:unit>
+              <f:unit>
+                <mod>
+                  <div>
+                    <v:n/>
+                    <t:int>10</t:int>
+                  </div>
+                  <t:int>10</t:int>
+                </mod>
+                <t:char>x</t:char>
+                <t:char>l</t:char>
+                <t:char>c</t:char>
+              </f:unit>
+              <f:unit>
+                <mod>
+                  <v:n/>
+                  <t:int>10</t:int>
+                </mod>
+                <t:char>i</t:char>
+                <t:char>v</t:char>
+                <t:char>x</t:char>
+              </f:unit>
+            </join>
+          </match>
+        </switch>
+      </function>
+    </set>
+  </watch>
+</component>

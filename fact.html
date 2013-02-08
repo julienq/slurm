@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Slurm</title>
+    <script src="slurm.js"></script>
+  </head>
+  <body>
+    <script>
+
+// fact :: int -> int
+function fact($0) {
+  if ($0 === 0) {
+    return 1;
+  } else if (true) {
+    var n = $0;
+    return n * fact(n - 1);
+  }
+}
+
+document.body.appendChild(slurm.$("p", (function (n) {
+  return ["fact(", n.toString(), ") = ", fact(n).toString()].join("");
+}(6))));
+
+    </script>
+  </body>
+</html>
+
